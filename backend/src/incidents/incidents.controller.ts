@@ -9,6 +9,7 @@ import { Role } from '../common/enums/roles.enum';
 import { UpdateStatusDto } from './dto/update-status.dto';
 import { UpdateSeverityDto } from './dto/update-severity.dto';
 import { AssignOwnerDto } from './dto/assign-owner.dto';
+import { AddCommentDto } from './dto/add-comment.dto';
 
 @Controller('incidents')
 export class IncidentsController {
@@ -65,5 +66,14 @@ export class IncidentsController {
   @Get(':id/timeline')
   getTimeline(@Param('id') id: string) {
     return this.incidentsService.getTimeline(id);
+  }
+
+  @Post(':id/comments')
+  addComment(
+    @Param('id') id: string,
+    @Body() dto: AddCommentDto,
+    @CurrentUser() user: AuthenticatedUser,
+  ) {
+    return this.incidentsService.addComment(id, dto, user.id);
   }
 }

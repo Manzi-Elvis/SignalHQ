@@ -13,6 +13,7 @@ import { Role } from '../common/enums/roles.enum';
 import { UsersService } from '../users/users.service';
 import { IncidentEvent } from '../events/entities/incident-event.entity';
 import { IncidentEventType } from '../common/enums/incident.enum';
+import { AddCommentDto } from './dto/add-comment.dto';
 
 @Injectable()
 export class IncidentsService {
@@ -133,5 +134,10 @@ export class IncidentsService {
       where: { incident: { id: incidentId } },
       order: { createdAt: 'ASC' },
     });
+  }
+
+  async addComment(id: string, dto: AddCommentDto, actorId: string): Promise<IncidentEvent> {
+    await this.findOne(id); // 404s if the incident doesn't exist
+    return this.logEvent(id, IncidentEventType.COMMENT, actorId, dto.content);
   }
 }
