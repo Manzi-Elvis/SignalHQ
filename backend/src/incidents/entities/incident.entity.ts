@@ -54,4 +54,7 @@ export class Incident {
   // than risk it falling back to something Postgres rejects.
   @Column({ name: 'resolved_at', type: 'timestamptz', nullable: true })
   resolvedAt!: Date | null;
+
+  @Column({ type: 'tsvector', select: false, nullable: true, name: 'search_vector' })
+  searchVector!: string;
 }

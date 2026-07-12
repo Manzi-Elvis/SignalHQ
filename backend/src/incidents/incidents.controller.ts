@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, Patch, Post, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Param, Patch, Post, UseGuards, Query } from '@nestjs/common';
 import { CurrentUser } from '../auth/decorators/current-user.decorator';
 import type { AuthenticatedUser } from '../auth/strategies/jwt.strategy';
 import { Roles } from '../auth/decorators/roles.decorator';
@@ -10,6 +10,7 @@ import { UpdateStatusDto } from './dto/update-status.dto';
 import { UpdateSeverityDto } from './dto/update-severity.dto';
 import { AssignOwnerDto } from './dto/assign-owner.dto';
 import { AddCommentDto } from './dto/add-comment.dto';
+import { QueryIncidentsDto } from './dto/query-incidents.dto';
 
 @Controller('incidents')
 export class IncidentsController {
@@ -21,8 +22,8 @@ export class IncidentsController {
   }
 
   @Get()
-  findAll() {
-    return this.incidentsService.findAll();
+  findAll(@Query() query: QueryIncidentsDto) {
+    return this.incidentsService.findAll(query);
   }
 
   @Get(':id')

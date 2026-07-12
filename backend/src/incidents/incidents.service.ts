@@ -3,7 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Incident } from './entities/incident.entity';
 import { CreateIncidentDto } from './dto/create-incident.dto';
-import { IncidentEventType, IncidentStatus } from '../common/enums/incident.enum';
+import { IncidentEventType, IncidentStatus, IncidentSeverity } from '../common/enums/incident.enum';
 import { AuthenticatedUser } from '../auth/strategies/jwt.strategy';
 import { IncidentStateMachine } from './incident-state-machine';
 import { UpdateStatusDto } from './dto/update-status.dto';
@@ -54,8 +54,39 @@ export class IncidentsService {
     return full;
   }
 
-  async findAll(): Promise<Incident[]> {
-    return this.incidentsRepo.find({ order: { createdAt: 'DESC' } });
+  async findAll(query: {
+    status?: IncidentStatus;
+    severity?: IncidentSeverity;
+    ownerId?: string;
+    search?: string;
+    page?: number;
+    limit?: number;
+  }): Promise<{ data: Incident[]; total: number; page: number; limit: number }> {
+    const page = query.page ?? 1;
+    const limit = query.limit ?? 20;
+
+    const qb = this.incidentsRepo
+      .createQueryBuilder('incident')
+      .leftJoinAndSelect('incident.reporter', 'reporter')
+      .leftJoinAndSelect('incident.owner', 'owner')
+      .orderBy('incident.createdAt', 'DESC');
+
+    if (query.status) qb.andWhere('incident.status = :status', { status: query.status });
+    if (query.severity) qb.andWhere('incident.severity = :severity', { severity: query.severity });
+    if (query.ownerId) qb.andWhere('owner.id = :ownerId', { ownerId: query.ownerId });
+
+    if (query.search?.trim()) {
+      qb.andWhere('incident.search_vector @@ plainto_tsquery(:search)', {
+        search: query.search.trim(),
+      });
+    }
+
+    const [data, total] = await qb
+      .skip((page - 1) * limit)
+      .take(limit)
+      .getManyAndCount();
+
+    return { data, total, page, limit };
   }
 
   async findOne(id: string): Promise<Incident> {
