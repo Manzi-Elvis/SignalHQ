@@ -1,14 +1,14 @@
-import { Body, Controller, Get, Param, Post } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, Patch, UseGuards } from '@nestjs/common';
 import { CurrentUser } from '../auth/decorators/current-user.decorator';
 import type { AuthenticatedUser } from '../auth/strategies/jwt.strategy';
 import { IncidentsService } from './incidents.service';
 import { CreateIncidentDto } from './dto/create-incident.dto';
-import { Patch, UseGuards } from '@nestjs/common';
 import { Roles } from '../auth/decorators/roles.decorator';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { Role } from '../common/enums/roles.enum';
 import { UpdateStatusDto } from './dto/update-status.dto';
 import { UpdateSeverityDto } from './dto/update-severity.dto';
+import { AssignOwnerDto } from './dto/assign-owner.dto';
 
 @Controller('incidents')
 export class IncidentsController {
@@ -32,8 +32,12 @@ export class IncidentsController {
   @Patch(':id/status')
   @UseGuards(RolesGuard)
   @Roles(Role.ON_CALL_ENGINEER, Role.ADMIN)
-  updateStatus(@Param('id') id: string, @Body() dto: UpdateStatusDto) {
-    return this.incidentsService.updateStatus(id, dto);
+  updateStatus(
+    @Param('id') id: string,
+    @Body() dto: UpdateStatusDto,
+    @CurrentUser() user: AuthenticatedUser,
+  ) {
+    return this.incidentsService.updateStatus(id, dto, user.id, user.role);
   }
 
   @Patch(':id/severity')
@@ -42,4 +46,10 @@ export class IncidentsController {
   updateSeverity(@Param('id') id: string, @Body() dto: UpdateSeverityDto) {
     return this.incidentsService.updateSeverity(id, dto);
   }
-}
+
+  @Patch(':id/owner')
+  @UseGuards(RolesGuard)
+  @Roles(Role.ON_CALL_ENGINEER, Role.ADMIN)
+  assignOwner(@Param('id') id: string, @Body() dto: AssignOwnerDto) {
+    return this.incidentsService.assignOwner(id, dto);
+  }}

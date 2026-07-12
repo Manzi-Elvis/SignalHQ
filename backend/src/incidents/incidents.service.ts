@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException, ForbiddenException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Incident } from './entities/incident.entity';
@@ -8,6 +8,8 @@ import { AuthenticatedUser } from '../auth/strategies/jwt.strategy';
 import { IncidentStateMachine } from './incident-state-machine';
 import { UpdateStatusDto } from './dto/update-status.dto';
 import { UpdateSeverityDto } from './dto/update-severity.dto';
+import { AssignOwnerDto } from './dto/assign-owner.dto';
+import { Role } from '../common/enums/roles.enum';
 
 @Injectable()
 export class IncidentsService {
@@ -38,14 +40,22 @@ export class IncidentsService {
     if (!incident) throw new NotFoundException(`Incident ${id} not found`);
     return incident;
   }
-  async updateStatus(id: string, dto: UpdateStatusDto): Promise<Incident> {
+
+  async updateStatus(
+    id: string,
+    dto: UpdateStatusDto,
+    actorId: string,
+    actorRole: Role,
+  ): Promise<Incident> {
     const incident = await this.findOne(id);
     IncidentStateMachine.assertValidTransition(incident.status, dto.status);
 
-    incident.status = dto.status;
     if (dto.status === IncidentStatus.RESOLVED) {
+      this.assertCanClose(incident, actorId, actorRole);
       incident.resolvedAt = new Date();
     }
+
+    incident.status = dto.status;
     await this.incidentsRepo.save(incident);
     return this.findOne(id);
   }
@@ -55,5 +65,22 @@ export class IncidentsService {
     incident.severity = dto.severity;
     await this.incidentsRepo.save(incident);
     return this.findOne(id);
+  }
+
+  async assignOwner(id: string, dto: AssignOwnerDto): Promise<Incident> {
+    const incident = await this.findOne(id);
+    incident.owner = { id: dto.ownerId } as any;
+    await this.incidentsRepo.save(incident);
+    return this.findOne(id);
+  }
+
+  assertCanClose(incident: Incident, actorId: string, actorRole: Role): void {
+    const isOwner = incident.owner?.id === actorId;
+    const isAdmin = actorRole === Role.ADMIN;
+    if (!isOwner && !isAdmin) {
+      throw new ForbiddenException(
+        'Only the assigned owner or an admin can resolve this incident',
+      );
+    }
   }
 }
