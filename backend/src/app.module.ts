@@ -9,6 +9,7 @@ import { AuthModule } from './auth/auth.module';
 import { APP_GUARD } from '@nestjs/core';
 import { JwtAuthGuard } from './auth/guards/jwt-auth.guard';
 import { Incident } from './incidents/entities/incident.entity';
+import { IncidentsModule } from './incidents/incidents.module';
 
 @Module({
   imports: [
@@ -30,6 +31,7 @@ import { Incident } from './incidents/entities/incident.entity';
     }),
     UsersModule,
     AuthModule,
+    IncidentsModule,
   ],
   controllers: [AppController],
   providers: [
