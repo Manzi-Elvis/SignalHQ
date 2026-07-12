@@ -16,7 +16,7 @@ export class User {
   @Column()
   email!: string;
 
-  // select: false means ordinary queries never return this column — it has
+  // select: false means ordinary queries never return this column -- it has
   // to be explicitly opted into with .addSelect(). This is what stops a
   // password hash from silently leaking into some future endpoint that
   // returns a User object (e.g. an incident's `reporter` field).
