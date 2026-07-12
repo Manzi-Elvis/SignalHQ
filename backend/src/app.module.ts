@@ -12,6 +12,7 @@ import { Incident } from './incidents/entities/incident.entity';
 import { IncidentsModule } from './incidents/incidents.module';
 import { IncidentEvent } from './events/entities/incident-event.entity';
 import { Attachment } from './attachments/entities/attachment.entity';
+import { AttachmentsModule } from './attachments/attachments.module';
 
 @Module({
   imports: [
@@ -34,6 +35,7 @@ import { Attachment } from './attachments/entities/attachment.entity';
     UsersModule,
     AuthModule,
     IncidentsModule,
+    AttachmentsModule
   ],
   controllers: [AppController],
   providers: [
