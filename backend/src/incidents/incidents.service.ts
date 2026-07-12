@@ -14,6 +14,7 @@ import { Role } from '../common/enums/roles.enum';
 import { UsersService } from '../users/users.service';
 import { IncidentEvent } from '../events/entities/incident-event.entity';
 import { AuditService } from '../audit/audit.service';
+import { IncidentsGateway } from '../websocket/incidents.gateway';
 
 @Injectable()
 export class IncidentsService {
@@ -24,6 +25,7 @@ export class IncidentsService {
     private readonly eventsRepo: Repository<IncidentEvent>,
     private readonly usersService: UsersService,
     private readonly auditService: AuditService,
+    private readonly gateway: IncidentsGateway,
   ) {}
 
   async create(dto: CreateIncidentDto, reporter: AuthenticatedUser): Promise<Incident> {
@@ -47,7 +49,9 @@ export class IncidentsService {
       metadata: { severity: dto.severity },
     });
 
-    return this.findOne(saved.id);
+    const full = await this.findOne(saved.id);
+    this.gateway.emitIncidentCreated(full);
+    return full;
   }
 
   async findAll(): Promise<Incident[]> {
@@ -102,7 +106,9 @@ export class IncidentsService {
       metadata: { from, to: dto.status },
     });
 
-    return this.findOne(id);
+    const full = await this.findOne(id);
+    this.gateway.emitIncidentUpdated(id, full);
+    return full;
   }
 
   async updateSeverity(
@@ -131,7 +137,9 @@ export class IncidentsService {
       metadata: { from, to: dto.severity },
     });
 
-    return this.findOne(id);
+    const full = await this.findOne(id);
+    this.gateway.emitIncidentUpdated(id, full);
+    return full;
   }
 
   async assignOwner(
@@ -160,12 +168,16 @@ export class IncidentsService {
       metadata: { ownerId: newOwner.id },
     });
 
-    return this.findOne(id);
+    const full = await this.findOne(id);
+    this.gateway.emitIncidentUpdated(id, full);
+    return full;
   }
 
   async addComment(id: string, dto: AddCommentDto, actorId: string): Promise<IncidentEvent> {
     await this.findOne(id);
-    return this.logEvent(id, IncidentEventType.COMMENT, actorId, dto.content);
+    const event = await this.logEvent(id, IncidentEventType.COMMENT, actorId, dto.content);
+    this.gateway.emitNewEvent(id, event);
+    return event;
   }
 
   assertCanClose(incident: Incident, actorId: string, actorRole: Role): void {

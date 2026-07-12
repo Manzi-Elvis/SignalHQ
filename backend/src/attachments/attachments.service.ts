@@ -4,6 +4,7 @@ import { Repository } from 'typeorm';
 import { Attachment } from './entities/attachment.entity';
 import { IncidentEvent } from '../events/entities/incident-event.entity';
 import { IncidentEventType } from '../common/enums/incident.enum';
+import { IncidentsGateway } from '../websocket/incidents.gateway';
 
 interface SaveMetadataParams {
   incidentId: string;
@@ -21,6 +22,7 @@ export class AttachmentsService {
     private readonly attachmentsRepo: Repository<Attachment>,
     @InjectRepository(IncidentEvent)
     private readonly eventsRepo: Repository<IncidentEvent>,
+    private readonly gateway: IncidentsGateway,
   ) {}
 
   async saveMetadata(params: SaveMetadataParams): Promise<Attachment> {
@@ -34,7 +36,7 @@ export class AttachmentsService {
     });
     const saved = await this.attachmentsRepo.save(attachment);
 
-    await this.eventsRepo.save(
+    const event = await this.eventsRepo.save(
       this.eventsRepo.create({
         incident: { id: params.incidentId } as any,
         type: IncidentEventType.ATTACHMENT_ADDED,
@@ -42,6 +44,7 @@ export class AttachmentsService {
         content: `Uploaded ${params.originalName}`,
       }),
     );
+    this.gateway.emitNewEvent(params.incidentId, event);
 
     return saved;
   }
