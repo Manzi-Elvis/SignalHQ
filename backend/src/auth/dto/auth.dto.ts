@@ -5,21 +5,21 @@ import { IsEmail, IsString, MinLength } from 'class-validator';
 // a higher role is a separate admin-only action we'll build later.
 export class RegisterDto {
   @IsEmail()
-  email: string;
+  email!: string;
 
   @IsString()
   @MinLength(8)
-  password: string;
+  password!: string;
 
   @IsString()
   @MinLength(1)
-  name: string;
+  name!: string;
 }
 
 export class LoginDto {
   @IsEmail()
-  email: string;
+  email!: string;
 
   @IsString()
-  password: string;
+  password!: string;
 }
