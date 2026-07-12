@@ -10,12 +10,14 @@ import { UpdateStatusDto } from './dto/update-status.dto';
 import { UpdateSeverityDto } from './dto/update-severity.dto';
 import { AssignOwnerDto } from './dto/assign-owner.dto';
 import { Role } from '../common/enums/roles.enum';
+import { UsersService } from '../users/users.service';
 
 @Injectable()
 export class IncidentsService {
   constructor(
     @InjectRepository(Incident)
     private readonly incidentsRepo: Repository<Incident>,
+    private readonly usersService: UsersService,
   ) {}
 
   async create(dto: CreateIncidentDto, reporter: AuthenticatedUser): Promise<Incident> {
@@ -69,7 +71,8 @@ export class IncidentsService {
 
   async assignOwner(id: string, dto: AssignOwnerDto): Promise<Incident> {
     const incident = await this.findOne(id);
-    incident.owner = { id: dto.ownerId } as any;
+    const newOwner = await this.usersService.findById(dto.ownerId); // throws NotFoundException if missing
+    incident.owner = newOwner;
     await this.incidentsRepo.save(incident);
     return this.findOne(id);
   }
