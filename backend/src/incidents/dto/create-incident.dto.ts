@@ -4,12 +4,12 @@ import { IncidentSeverity } from '../../common/enums/incident.enum';
 export class CreateIncidentDto {
   @IsString()
   @MinLength(3)
-  title: string;
+  title!: string;
 
   @IsString()
   @MinLength(1)
-  description: string;
+  description!: string;
 
   @IsEnum(IncidentSeverity)
-  severity: IncidentSeverity;
+  severity!: IncidentSeverity;
 }
