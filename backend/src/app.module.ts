@@ -13,6 +13,8 @@ import { IncidentsModule } from './incidents/incidents.module';
 import { IncidentEvent } from './events/entities/incident-event.entity';
 import { Attachment } from './attachments/entities/attachment.entity';
 import { AttachmentsModule } from './attachments/attachments.module';
+import { AuditLog } from './audit/entities/audit-log.entity';
+import { AuditModule } from './audit/audit.module';
 
 @Module({
   imports: [
@@ -27,7 +29,7 @@ import { AttachmentsModule } from './attachments/attachments.module';
         username: config.getOrThrow<string>('DB_USERNAME'),
         password: config.getOrThrow<string>('DB_PASSWORD'),
         database: config.getOrThrow<string>('DB_NAME'),
-        entities: [User, Incident, IncidentEvent, Attachment],
+        entities: [User, Incident, IncidentEvent, Attachment, AuditLog],
         synchronize: false,
         logging: true,
       }),
@@ -35,7 +37,8 @@ import { AttachmentsModule } from './attachments/attachments.module';
     UsersModule,
     AuthModule,
     IncidentsModule,
-    AttachmentsModule
+    AttachmentsModule,
+    AuditModule,
   ],
   controllers: [AppController],
   providers: [
