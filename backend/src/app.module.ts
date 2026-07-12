@@ -8,6 +8,7 @@ import { UsersModule } from './users/users.module';
 import { AuthModule } from './auth/auth.module';
 import { APP_GUARD } from '@nestjs/core';
 import { JwtAuthGuard } from './auth/guards/jwt-auth.guard';
+import { Incident } from './incidents/entities/incident.entity';
 
 @Module({
   imports: [
@@ -22,7 +23,7 @@ import { JwtAuthGuard } from './auth/guards/jwt-auth.guard';
         username: config.getOrThrow<string>('DB_USERNAME'),
         password: config.getOrThrow<string>('DB_PASSWORD'),
         database: config.getOrThrow<string>('DB_NAME'),
-        entities: [User],
+        entities: [User, Incident],
         synchronize: false,
         logging: true,
       }),
@@ -31,7 +32,9 @@ import { JwtAuthGuard } from './auth/guards/jwt-auth.guard';
     AuthModule,
   ],
   controllers: [AppController],
-  providers: [AppService, AppService,
-    { provide: APP_GUARD, useClass: JwtAuthGuard }],
+  providers: [
+    AppService,
+    { provide: APP_GUARD, useClass: JwtAuthGuard },
+  ],
 })
 export class AppModule {}
