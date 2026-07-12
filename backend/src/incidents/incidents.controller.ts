@@ -43,13 +43,27 @@ export class IncidentsController {
   @Patch(':id/severity')
   @UseGuards(RolesGuard)
   @Roles(Role.ON_CALL_ENGINEER, Role.ADMIN)
-  updateSeverity(@Param('id') id: string, @Body() dto: UpdateSeverityDto) {
-    return this.incidentsService.updateSeverity(id, dto);
+  updateSeverity(
+    @Param('id') id: string,
+    @Body() dto: UpdateSeverityDto,
+    @CurrentUser() user: AuthenticatedUser,
+  ) {
+    return this.incidentsService.updateSeverity(id, dto, user.id);
   }
 
   @Patch(':id/owner')
   @UseGuards(RolesGuard)
   @Roles(Role.ON_CALL_ENGINEER, Role.ADMIN)
-  assignOwner(@Param('id') id: string, @Body() dto: AssignOwnerDto) {
-    return this.incidentsService.assignOwner(id, dto);
-  }}
+  assignOwner(
+    @Param('id') id: string,
+    @Body() dto: AssignOwnerDto,
+    @CurrentUser() user: AuthenticatedUser,
+  ) {
+    return this.incidentsService.assignOwner(id, dto, user.id);
+  }
+
+  @Get(':id/timeline')
+  getTimeline(@Param('id') id: string) {
+    return this.incidentsService.getTimeline(id);
+  }
+}
