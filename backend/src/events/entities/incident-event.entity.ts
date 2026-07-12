@@ -19,22 +19,22 @@ import { User } from '../../users/entities/user.entity';
 @Index(['incident'])
 export class IncidentEvent {
   @PrimaryGeneratedColumn('uuid')
-  id: string;
+  id!: string;
 
   @ManyToOne(() => Incident, { onDelete: 'CASCADE', nullable: false })
   @JoinColumn({ name: 'incident_id' })
-  incident: Incident;
+  incident!: Incident;
 
   @Column({ type: 'enum', enum: IncidentEventType })
-  type: IncidentEventType;
+  type!: IncidentEventType;
 
   @ManyToOne(() => User, { eager: true, nullable: false })
   @JoinColumn({ name: 'author_id' })
-  author: User;
+  author!: User;
 
   @Column({ type: 'text' })
-  content: string;
+  content!: string;
 
   @CreateDateColumn({ name: 'created_at' })
-  createdAt: Date;
+  createdAt!: Date;
 }
