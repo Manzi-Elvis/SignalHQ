@@ -1,11 +1,11 @@
-import { Body, Controller, Get, Param, Post, Patch, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Param, Patch, Post, UseGuards } from '@nestjs/common';
 import { CurrentUser } from '../auth/decorators/current-user.decorator';
 import type { AuthenticatedUser } from '../auth/strategies/jwt.strategy';
-import { IncidentsService } from './incidents.service';
-import { CreateIncidentDto } from './dto/create-incident.dto';
 import { Roles } from '../auth/decorators/roles.decorator';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { Role } from '../common/enums/roles.enum';
+import { IncidentsService } from './incidents.service';
+import { CreateIncidentDto } from './dto/create-incident.dto';
 import { UpdateStatusDto } from './dto/update-status.dto';
 import { UpdateSeverityDto } from './dto/update-severity.dto';
 import { AssignOwnerDto } from './dto/assign-owner.dto';
@@ -30,6 +30,11 @@ export class IncidentsController {
     return this.incidentsService.findOne(id);
   }
 
+  @Get(':id/timeline')
+  getTimeline(@Param('id') id: string) {
+    return this.incidentsService.getTimeline(id);
+  }
+
   @Patch(':id/status')
   @UseGuards(RolesGuard)
   @Roles(Role.ON_CALL_ENGINEER, Role.ADMIN)
@@ -38,7 +43,7 @@ export class IncidentsController {
     @Body() dto: UpdateStatusDto,
     @CurrentUser() user: AuthenticatedUser,
   ) {
-    return this.incidentsService.updateStatus(id, dto, user.id, user.role);
+    return this.incidentsService.updateStatus(id, dto, user.id, user.email, user.role);
   }
 
   @Patch(':id/severity')
@@ -49,7 +54,7 @@ export class IncidentsController {
     @Body() dto: UpdateSeverityDto,
     @CurrentUser() user: AuthenticatedUser,
   ) {
-    return this.incidentsService.updateSeverity(id, dto, user.id);
+    return this.incidentsService.updateSeverity(id, dto, user.id, user.email);
   }
 
   @Patch(':id/owner')
@@ -60,12 +65,7 @@ export class IncidentsController {
     @Body() dto: AssignOwnerDto,
     @CurrentUser() user: AuthenticatedUser,
   ) {
-    return this.incidentsService.assignOwner(id, dto, user.id);
-  }
-
-  @Get(':id/timeline')
-  getTimeline(@Param('id') id: string) {
-    return this.incidentsService.getTimeline(id);
+    return this.incidentsService.assignOwner(id, dto, user.id, user.email);
   }
 
   @Post(':id/comments')
