@@ -2,6 +2,8 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Attachment } from './entities/attachment.entity';
+import { IncidentEvent } from '../events/entities/incident-event.entity';
+import { IncidentEventType } from '../common/enums/incident.enum';
 
 interface SaveMetadataParams {
   incidentId: string;
@@ -17,6 +19,8 @@ export class AttachmentsService {
   constructor(
     @InjectRepository(Attachment)
     private readonly attachmentsRepo: Repository<Attachment>,
+    @InjectRepository(IncidentEvent)
+    private readonly eventsRepo: Repository<IncidentEvent>,
   ) {}
 
   async saveMetadata(params: SaveMetadataParams): Promise<Attachment> {
@@ -28,6 +32,17 @@ export class AttachmentsService {
       sizeBytes: params.sizeBytes,
       uploadedBy: { id: params.uploaderId } as any,
     });
-    return this.attachmentsRepo.save(attachment);
+    const saved = await this.attachmentsRepo.save(attachment);
+
+    await this.eventsRepo.save(
+      this.eventsRepo.create({
+        incident: { id: params.incidentId } as any,
+        type: IncidentEventType.ATTACHMENT_ADDED,
+        author: { id: params.uploaderId } as any,
+        content: `Uploaded ${params.originalName}`,
+      }),
+    );
+
+    return saved;
   }
 }
