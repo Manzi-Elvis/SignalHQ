@@ -2,6 +2,7 @@ import { DataSource } from 'typeorm';
 import { config } from 'dotenv';
 import { User } from './src/users/entities/user.entity';
 import { Incident } from './src/incidents/entities/incident.entity';
+import { IncidentEvent } from './src/events/entities/incident-event.entity';
 
 config();
 
@@ -12,6 +13,6 @@ export default new DataSource({
   username: process.env.DB_USERNAME,
   password: process.env.DB_PASSWORD,
   database: process.env.DB_NAME,
-  entities: [User, Incident],
+  entities: [User, Incident, IncidentEvent],
   migrations: ['src/database/migrations/*.ts'],
 });

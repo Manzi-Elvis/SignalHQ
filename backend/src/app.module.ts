@@ -10,6 +10,7 @@ import { APP_GUARD } from '@nestjs/core';
 import { JwtAuthGuard } from './auth/guards/jwt-auth.guard';
 import { Incident } from './incidents/entities/incident.entity';
 import { IncidentsModule } from './incidents/incidents.module';
+import { IncidentEvent } from './events/entities/incident-event.entity';
 
 @Module({
   imports: [
@@ -24,7 +25,7 @@ import { IncidentsModule } from './incidents/incidents.module';
         username: config.getOrThrow<string>('DB_USERNAME'),
         password: config.getOrThrow<string>('DB_PASSWORD'),
         database: config.getOrThrow<string>('DB_NAME'),
-        entities: [User, Incident],
+        entities: [User, Incident, IncidentEvent],
         synchronize: false,
         logging: true,
       }),
