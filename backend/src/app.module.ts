@@ -11,6 +11,7 @@ import { JwtAuthGuard } from './auth/guards/jwt-auth.guard';
 import { Incident } from './incidents/entities/incident.entity';
 import { IncidentsModule } from './incidents/incidents.module';
 import { IncidentEvent } from './events/entities/incident-event.entity';
+import { Attachment } from './attachments/entities/attachment.entity';
 
 @Module({
   imports: [
@@ -25,7 +26,7 @@ import { IncidentEvent } from './events/entities/incident-event.entity';
         username: config.getOrThrow<string>('DB_USERNAME'),
         password: config.getOrThrow<string>('DB_PASSWORD'),
         database: config.getOrThrow<string>('DB_NAME'),
-        entities: [User, Incident, IncidentEvent],
+        entities: [User, Incident, IncidentEvent, Attachment],
         synchronize: false,
         logging: true,
       }),
