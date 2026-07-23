@@ -46,4 +46,17 @@ export class UsersService {
     if (!user) throw new NotFoundException('User not found');
     return user;
   }
+
+  async findAll(): Promise<User[]> {
+    return this.usersRepo.find({ order: { createdAt: 'DESC' } });
+  }
+
+  // Admin-only role escalation path (enforced at the controller level) --
+  // the only place a user's role can change after registration, since
+  // self-registration always lands as VIEWER (see AuthService.register).
+  async setRole(id: string, role: Role): Promise<User> {
+    const user = await this.findById(id);
+    user.role = role;
+    return this.usersRepo.save(user);
+  }
 }
