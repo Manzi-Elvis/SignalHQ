@@ -94,6 +94,11 @@ SignalHQ/
 │       └── types/                    Shared domain types
 └── README.md
 ```
+### User Interface:
+![Signal HQ User Interface](./docs/assets/ui.png)
+
+### Database:
+![Signal HQ Database](./docs/assets/db.png)
 
 ## Getting started
 
