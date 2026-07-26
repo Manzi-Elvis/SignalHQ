@@ -9,8 +9,8 @@ export function NavBar() {
     <nav className="border-b border-slate-200 bg-white">
       <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-3">
         <div className="flex items-center gap-6">
-          <Link to="/incidents" className="text-lg font-semibold text-slate-900">
-            SignalHQ
+          <Link to="/incidents" className="flex items-center">
+            <img src="/src/assets/logo-full.svg" alt="SignalHQ" className="h-8" />
           </Link>
           <Link to="/incidents" className="text-sm text-slate-600 hover:text-slate-900">
             Incidents

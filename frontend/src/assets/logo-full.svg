@@ -1,16 +1,13 @@
-<svg viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
-  <!-- Rounded square backdrop, matching the app's rounded-lg/border-slate-200 convention -->
+<svg viewBox="0 0 220 48" xmlns="http://www.w3.org/2000/svg">
+  <!-- Icon mark -->
   <rect x="1" y="1" width="46" height="46" rx="11" fill="#0f172a"/>
-
-  <!-- Signal source dot -->
   <circle cx="24" cy="27" r="3.4" fill="#ffffff"/>
-
-  <!-- Radiating signal arcs, broadcasting outward and slightly upward -
-       reads as "signal" without leaning on a literal wifi/radio cliché -->
   <path d="M17 22a10 10 0 0 1 14 0" stroke="#ffffff" stroke-width="2.6" stroke-linecap="round" fill="none"/>
   <path d="M12.5 17.5a17 17 0 0 1 23 0" stroke="#ffffff" stroke-width="2.6" stroke-linecap="round" fill="none" opacity="0.55"/>
-
-  <!-- Small alert accent: a single red arc segment, tying to the sev1
-       red used throughout the app's SeverityBadge component -->
   <path d="M31 22a10 10 0 0 0 -2.8-4.2" stroke="#dc2626" stroke-width="2.6" stroke-linecap="round" fill="none"/>
+
+  <!-- Wordmark, set in a plain system sans-serif to match Tailwind's default
+       font stack used across the rest of the app (font-semibold tracking-tight) -->
+  <text x="60" y="31" font-family="Segoe UI, Inter, Helvetica, Arial, sans-serif"
+        font-size="24" font-weight="600" letter-spacing="-0.5" fill="#0f172a">Signal<tspan fill="#475569">HQ</tspan></text>
 </svg>

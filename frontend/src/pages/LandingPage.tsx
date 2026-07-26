@@ -80,7 +80,9 @@ export function LandingPage() {
       {/* Nav */}
       <nav className="border-b border-slate-200">
         <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-4">
-          <span className="text-lg font-semibold tracking-tight text-slate-900">SignalHQ</span>
+          <Link to="#" className="flex items-center">
+            <img src="/src/assets/logo-full.svg" alt="SignalHQ" className="h-8" />
+          </Link>
           <div className="flex items-center gap-3">
             <Link to="/login" className="text-sm font-medium text-slate-600 hover:text-slate-900">
               Sign in
