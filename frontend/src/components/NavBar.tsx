@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { Role } from '../types';
+import logoFull from '../assets/logo-full.svg';
 
 export function NavBar() {
   const { user, logout } = useAuth();
@@ -10,7 +11,7 @@ export function NavBar() {
       <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-3">
         <div className="flex items-center gap-6">
           <Link to="/incidents" className="flex items-center">
-            <img src="/src/assets/logo-full.svg" alt="SignalHQ" className="h-8" />
+            <img src={logoFull} alt="SignalHQ" className="h-8" />
           </Link>
           <Link to="/incidents" className="text-sm text-slate-600 hover:text-slate-900">
             Incidents
