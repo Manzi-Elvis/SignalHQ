@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom';
 import { StatusBadge } from '../components/StatusBadge';
 import { SeverityBadge } from '../components/SeverityBadge';
 import { IncidentSeverity, IncidentStatus } from '../types';
+import logoFull from '../assets/logo-full.svg';
 
 const LIFECYCLE: IncidentStatus[] = [
   IncidentStatus.OPEN,
@@ -81,7 +82,7 @@ export function LandingPage() {
       <nav className="border-b border-slate-200">
         <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-4">
           <Link to="#" className="flex items-center">
-            <img src="/src/assets/logo-full.svg" alt="SignalHQ" className="h-8" />
+            <img src={logoFull} alt="SignalHQ" className="h-8" />
           </Link>
           <div className="flex items-center gap-3">
             <Link to="/login" className="text-sm font-medium text-slate-600 hover:text-slate-900">
