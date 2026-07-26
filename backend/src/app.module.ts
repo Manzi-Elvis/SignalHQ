@@ -22,17 +22,37 @@ import { AuditModule } from './audit/audit.module';
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
       inject: [ConfigService],
-      useFactory: (config: ConfigService) => ({
-        type: 'postgres',
-        host: config.getOrThrow<string>('DB_HOST'),
-        port: config.get<number>('DB_PORT', 5432),
-        username: config.getOrThrow<string>('DB_USERNAME'),
-        password: config.getOrThrow<string>('DB_PASSWORD'),
-        database: config.getOrThrow<string>('DB_NAME'),
-        entities: [User, Incident, IncidentEvent, Attachment, AuditLog],
-        synchronize: false,
-        logging: true,
-      }),
+      useFactory: (config: ConfigService) => {
+        const databaseUrl = config.get<string>('DATABASE_URL');
+
+        // Neon (and most managed Postgres providers) require SSL and give
+        // you one connection string instead of separate host/port/user
+        // pieces. Local Docker Postgres has no SSL and uses the individual
+        // DB_* vars -- this branch keeps both working without duplicating
+        // the whole config block.
+        if (databaseUrl) {
+          return {
+            type: 'postgres' as const,
+            url: databaseUrl,
+            ssl: { rejectUnauthorized: false },
+            entities: [User, Incident, IncidentEvent, Attachment, AuditLog],
+            synchronize: false,
+            logging: true,
+          };
+        }
+
+        return {
+          type: 'postgres' as const,
+          host: config.getOrThrow<string>('DB_HOST'),
+          port: config.get<number>('DB_PORT', 5432),
+          username: config.getOrThrow<string>('DB_USERNAME'),
+          password: config.getOrThrow<string>('DB_PASSWORD'),
+          database: config.getOrThrow<string>('DB_NAME'),
+          entities: [User, Incident, IncidentEvent, Attachment, AuditLog],
+          synchronize: false,
+          logging: true,
+        };
+      },
     }),
     UsersModule,
     AuthModule,
